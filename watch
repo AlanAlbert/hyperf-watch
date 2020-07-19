@@ -114,21 +114,19 @@ function addEvent($serve)
 {
     Event::add($serve->pipe, function () use (&$serve) {
         $message = @$serve->read();
-        if (!empty($message)) {
-            $debug = strpos($message, '[DEBUG]') !== false;
-            $info = strpos($message, '[INFO]') !== false;
-            $warn = strpos($message, '[WARNING]') !== false;
-            $error = strpos($message, '[ERROR]') !== false;
-            if ($debug) {
-                echo CONSOLE_COLOR_BLUE . $message;
-            } elseif ($info) {
-                echo CONSOLE_COLOR_GREEN . $message;
-            } elseif ($warn) {
-                echo CONSOLE_COLOR_YELLOW . $message;
-            } elseif ($error) {
-                echo CONSOLE_COLOR_RED . $message;
+        $messages = explode("\n", $message);
+        foreach ($messages as $message) {
+            if ($message === '') continue;
+            if (strpos($message, '[DEBUG]') !== false) {
+                echo CONSOLE_COLOR_BLUE . '[DEBUG] ' . CONSOLE_COLOR_DEFAULT . substr($message, 8);
+            } elseif (strpos($message, '[INFO]') !== false) {
+                echo CONSOLE_COLOR_GREEN . '[INFO] ' . CONSOLE_COLOR_DEFAULT . substr($message, 7);
+            } elseif (strpos($message, '[WARNING]') !== false) {
+                echo CONSOLE_COLOR_YELLOW . '[WARNING] ' . CONSOLE_COLOR_DEFAULT . substr($message, 10);
+            } elseif (strpos($message, '[ERROR]') !== false) {
+                echo CONSOLE_COLOR_RED . '[ERROR] ' . CONSOLE_COLOR_DEFAULT . substr($message, 8);
             } else echo CONSOLE_COLOR_DEFAULT . $message;
-            echo CONSOLE_COLOR_DEFAULT;
+            echo "\n";
         }
     });
 }
